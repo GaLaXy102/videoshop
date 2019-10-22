@@ -68,8 +68,7 @@ class CustomerDataInitializer implements DataInitializer {
 		// UserAccounts bestehen aus einem Identifier und eine Password, diese werden auch für ein Login gebraucht
 		// Zusätzlich kann ein UserAccount noch Rollen bekommen, diese können in den Controllern und im View dazu genutzt
 		// werden
-		// um bestimmte Bereiche nicht zugänglich zu machen, das "ROLE_"-Prefix ist eine Konvention welche für Spring
-		// Security nötig ist.
+		// um bestimmte Bereiche nicht zugänglich zu machen.
 
 		// Skip creation if database was already populated
 		if (userAccountManager.findByUsername("boss").isPresent()) {
@@ -80,10 +79,10 @@ class CustomerDataInitializer implements DataInitializer {
 
 		var password = UnencryptedPassword.of("123");
 
-		var bossAccount = userAccountManager.create("boss", password, Role.of("ROLE_BOSS"));
+		var bossAccount = userAccountManager.create("boss", password, Role.of("BOSS"));
 		userAccountManager.save(bossAccount);
 
-		var customerRole = Role.of("ROLE_CUSTOMER");
+		var customerRole = Role.of("CUSTOMER");
 
 		var ua1 = userAccountManager.create("hans", password, customerRole);
 		var ua2 = userAccountManager.create("dextermorgan", password, customerRole);
