@@ -15,31 +15,24 @@
  */
 package videoshop.catalog;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.javamoney.moneta.Money;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-
-import org.javamoney.moneta.Money;
-import org.salespointframework.catalog.Product;
+import java.util.ArrayList;
+import java.util.List;
 
 //(｡◕‿◕｡)
 // Da der Shop DVD sowie BluRay verkaufen soll ist es sinnvoll eine gemeinsame Basisklasse zu erstellen.
-// Diese erbt von Product um die Catalog-Klasse aus Salespoint nutzen zu können.
+// Diese erbt von Buyable->Product um die Catalog-Klasse aus Salespoint nutzen zu können.
 // Ein Primärschlüssel ist nicht notwendig, da dieser schon in Product definiert ist, alle anderen JPA-Anforderungen müssen aber erfüllt werden
 @Entity
-public class Disc extends Product {
-
-	public static enum DiscType {
-		BLURAY, DVD;
-	}
+public class Disc extends Buyable {
 
 	// (｡◕‿◕｡)
 	// primitve Typen oder Strings müssen nicht extra für JPA annotiert werden
 	private String genre, image;
-	private DiscType type;
 
 	// (｡◕‿◕｡)
 	// Jede Disc besitzt mehrere Kommentare, eine "1 zu n"-Beziehung -> @OneToMany für JPA
@@ -51,13 +44,12 @@ public class Disc extends Product {
 	@SuppressWarnings("unused")
 	private Disc() {}
 
-	public Disc(String name, String image, Money price, String genre, DiscType type) {
+	public Disc(String name, String image, Money price, String genre, BuyableType type) {
 
-		super(name, price);
+		super(name, price, type);
 
 		this.image = image;
 		this.genre = genre;
-		this.type = type;
 	}
 
 	public String getGenre() {
@@ -79,9 +71,5 @@ public class Disc extends Product {
 
 	public String getImage() {
 		return image;
-	}
-
-	public DiscType getType() {
-		return type;
 	}
 }
