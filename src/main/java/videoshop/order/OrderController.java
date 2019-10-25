@@ -15,10 +15,6 @@
  */
 package videoshop.order;
 
-import videoshop.catalog.Disc;
-
-import java.util.Optional;
-
 import org.salespointframework.catalog.Product;
 import org.salespointframework.core.AbstractEntity;
 import org.salespointframework.order.Cart;
@@ -38,6 +34,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import videoshop.catalog.Buyable;
+import videoshop.catalog.Disc;
+import videoshop.catalog.Voucher;
+import videoshop.inventory.SoldVoucher;
+import videoshop.inventory.VoucherInventory;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * A Spring MVC controller to manage the {@link Cart}. {@link Cart} instances are held in the session as they're
@@ -52,16 +57,19 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 class OrderController {
 
 	private final OrderManager<Order> orderManager;
+	private final VoucherInventory voucherInventory;
 
 	/**
 	 * Creates a new {@link OrderController} with the given {@link OrderManager}.
 	 *
 	 * @param orderManager must not be {@literal null}.
 	 */
-	OrderController(OrderManager<Order> orderManager) {
+	OrderController(OrderManager<Order> orderManager, VoucherInventory voucherInventory) {
 
 		Assert.notNull(orderManager, "OrderManager must not be null!");
+		Assert.notNull(voucherInventory, "VoucherInventory must not be null");
 		this.orderManager = orderManager;
+		this.voucherInventory = voucherInventory;
 	}
 
 	/**
@@ -81,13 +89,13 @@ class OrderController {
 	 * Salespoint extension will directly load the object instance from the database. If the identifier provided is
 	 * invalid (invalid format or no {@link Product} with the id found), {@literal null} will be handed into the method.
 	 *
-	 * @param disc the disc that should be added to the cart (may be {@literal null}).
+	 * @param buyable the disc that should be added to the cart (may be {@literal null}).
 	 * @param number number of discs that should be added to the cart.
 	 * @param cart must not be {@literal null}.
 	 * @return the view name.
 	 */
 	@PostMapping("/cart")
-	String addDisc(@RequestParam("pid") Disc disc, @RequestParam("number") int number, @ModelAttribute Cart cart) {
+	String addItem(@RequestParam("pid") Buyable buyable, @RequestParam("number") int number, @ModelAttribute Cart cart) {
 
 		// (｡◕‿◕｡)
 		// Das Inputfeld im View ist eigentlich begrenzt, allerdings sollte man immer auch serverseitig validieren
@@ -95,17 +103,19 @@ class OrderController {
 
 		// (｡◕‿◕｡)
 		// Wir fügen dem Warenkorb die Disc in entsprechender Anzahl hinzu.
-		cart.addOrUpdateItem(disc, Quantity.of(amount));
+		cart.addOrUpdateItem(buyable, Quantity.of(amount));
 
 		// (｡◕‿◕｡)
 		// Je nachdem ob disc eine DVD oder eine Bluray ist, leiten wir auf die richtige Seite weiter
 
-		switch (disc.getType()) {
+		switch (buyable.getType()) {
 			case DVD:
 				return "redirect:dvds";
 			case BLURAY:
-			default:
 				return "redirect:blurays";
+			case VOUCHER:
+			default:
+				return "redirect:vouchers";
 		}
 	}
 
@@ -123,7 +133,7 @@ class OrderController {
 	 * @return the view name.
 	 */
 	@PostMapping("/checkout")
-	String buy(@ModelAttribute Cart cart, @LoggedIn Optional<UserAccount> userAccount) {
+	String buy(@ModelAttribute Cart cart, @LoggedIn Optional<UserAccount> userAccount, Model model) {
 
 		return userAccount.map(account -> {
 
@@ -131,15 +141,35 @@ class OrderController {
 			// Mit completeOrder(…) wird der Warenkorb in die Order überführt, diese wird dann bezahlt und abgeschlossen.
 			// Orders können nur abgeschlossen werden, wenn diese vorher bezahlt wurden.
 			var order = new Order(account, Cash.CASH);
+			// Temporary data structure
+			List<SoldVoucher> soldVouchersInOrder = new LinkedList<>();
 
 			cart.addItemsTo(order);
 
 			orderManager.payOrder(order);
+			// Filter all vouchers
+			cart.get().filter(cartItem -> cartItem.getProduct() instanceof Voucher)
+					// Create a new SoldVoucher for each bought one and make it persistent and reference it in our
+					// temporary structure
+					.forEach(cartItem -> {
+						int count = 0;
+						SoldVoucher newVoucher = null;
+						while (cartItem.getQuantity().isGreaterThan(Quantity.of(count))) {
+							newVoucher = new SoldVoucher((cartItem.getProduct()).getPrice());
+							voucherInventory.save(newVoucher);
+							soldVouchersInOrder.add(newVoucher);
+							++count;
+						}
+					});
 			orderManager.completeOrder(order);
-
 			cart.clear();
-
-			return "redirect:/";
+			if (soldVouchersInOrder.isEmpty()) {
+				return "redirect:/";
+			} else {
+				// Show SoldVouchers' details
+				model.addAttribute("soldVouchers", soldVouchersInOrder);
+				return "claimVoucher";
+			}
 		}).orElse("redirect:/cart");
 	}
 

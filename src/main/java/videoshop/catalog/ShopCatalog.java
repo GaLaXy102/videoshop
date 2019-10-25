@@ -15,28 +15,27 @@
  */
 package videoshop.catalog;
 
-import videoshop.catalog.Disc.DiscType;
-
 import org.salespointframework.catalog.Catalog;
 import org.springframework.data.domain.Sort;
+import videoshop.catalog.Buyable.BuyableType;
 
 /**
  * An extension of {@link Catalog} to add video shop specific query methods.
  *
  * @author Oliver Gierke
  */
-public interface VideoCatalog extends Catalog<Disc> {
+public interface ShopCatalog extends Catalog<Buyable> {
 
 	static final Sort DEFAULT_SORT = Sort.by("productIdentifier").descending();
 
 	/**
-	 * Returns all {@link Disc}s by type ordered by the given {@link Sort}.
+	 * Returns all {@link Buyable}s by type ordered by the given {@link Sort}.
 	 *
 	 * @param type must not be {@literal null}.
 	 * @param sort must not be {@literal null}.
 	 * @return the discs of the given type, never {@literal null}.
 	 */
-	Iterable<Disc> findByType(DiscType type, Sort sort);
+	Iterable<Buyable> findByType(BuyableType type, Sort sort);
 
 	/**
 	 * Returns all {@link Disc}s by type ordered by their identifier.
@@ -44,7 +43,7 @@ public interface VideoCatalog extends Catalog<Disc> {
 	 * @param type must not be {@literal null}.
 	 * @return the discs of the given type, never {@literal null}.
 	 */
-	default Iterable<Disc> findByType(DiscType type) {
+	default Iterable<Buyable> findByType(BuyableType type) {
 		return findByType(type, DEFAULT_SORT);
 	}
 }

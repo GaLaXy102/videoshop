@@ -15,38 +15,37 @@
  */
 package videoshop.catalog;
 
-import videoshop.catalog.Disc.DiscType;
-
-import java.time.LocalDateTime;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-
 import org.hibernate.validator.constraints.Range;
 import org.salespointframework.inventory.InventoryItem;
 import org.salespointframework.inventory.UniqueInventory;
 import org.salespointframework.inventory.UniqueInventoryItem;
 import org.salespointframework.quantity.Quantity;
 import org.salespointframework.time.BusinessTime;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import videoshop.catalog.Buyable.BuyableType;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 
 @Controller
 class CatalogController {
 
 	private static final Quantity NONE = Quantity.of(0);
 
-	private final VideoCatalog catalog;
+	private final ShopCatalog catalog;
 	private final UniqueInventory<UniqueInventoryItem> inventory;
 	private final BusinessTime businessTime;
 
-	CatalogController(VideoCatalog videoCatalog, UniqueInventory<UniqueInventoryItem> inventory,
-			BusinessTime businessTime) {
+	CatalogController(ShopCatalog shopCatalog, UniqueInventory<UniqueInventoryItem> inventory,
+					  BusinessTime businessTime) {
 
-		this.catalog = videoCatalog;
+		this.catalog = shopCatalog;
 		this.inventory = inventory;
 		this.businessTime = businessTime;
 	}
@@ -54,7 +53,7 @@ class CatalogController {
 	@GetMapping("/dvds")
 	String dvdCatalog(Model model) {
 
-		model.addAttribute("catalog", catalog.findByType(DiscType.DVD));
+		model.addAttribute("catalog", catalog.findByType(BuyableType.DVD));
 		model.addAttribute("title", "catalog.dvd.title");
 
 		return "catalog";
@@ -63,8 +62,17 @@ class CatalogController {
 	@GetMapping("/blurays")
 	String blurayCatalog(Model model) {
 
-		model.addAttribute("catalog", catalog.findByType(DiscType.BLURAY));
+		model.addAttribute("catalog", catalog.findByType(BuyableType.BLURAY));
 		model.addAttribute("title", "catalog.bluray.title");
+
+		return "catalog";
+	}
+
+	// Add shop page for vouchers
+	@GetMapping("/vouchers")
+	String vouchers(Model model) {
+		model.addAttribute("catalog", catalog.findByType(BuyableType.VOUCHER, Sort.by("price").ascending()));
+		model.addAttribute("title", "catalog.voucher.title");
 
 		return "catalog";
 	}
