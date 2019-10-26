@@ -24,7 +24,9 @@ public class SoldVoucher extends Product {
         super("Sold Gift Voucher", value);
         Assert.notNull(this.getId(), "Error while deploying SoldVoucher");
         this.identifier = this.getId().toString();
-        this.setValue(value);
+        Assert.notNull(value, "Value must not be null!");
+        Assert.isTrue(value.isPositive(), "Value must be positive!");
+        this.value = value;
         this.pass = RandomString.make();
     }
 
@@ -79,7 +81,7 @@ public class SoldVoucher extends Product {
      */
     public void setValue(MonetaryAmount value) {
         Assert.notNull(value, "Value must not be null!");
-        Assert.isTrue(value.isPositive(), "Value must be positive!");
+        Assert.isTrue(value.isPositiveOrZero(), "Value must be non-negative!");
         this.value = value;
     }
 }

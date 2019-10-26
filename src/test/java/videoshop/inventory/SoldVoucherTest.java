@@ -30,6 +30,13 @@ public class SoldVoucherTest {
         assertThatIllegalArgumentException().isThrownBy(() -> new SoldVoucher(null));
         assertThatIllegalArgumentException().isThrownBy(() -> new SoldVoucher(Money.of(-1, EURO)));
         assertThatIllegalArgumentException().isThrownBy(() -> new SoldVoucher(Money.of(0, EURO)));
+        assertThatIllegalArgumentException().isThrownBy(() -> {
+            SoldVoucher soldVoucher = new SoldVoucher(Money.of(10, EURO));
+            soldVoucher.setValue(Money.of(-1, EURO));
+        });
+        SoldVoucher soldVoucher = new SoldVoucher(Money.of(10, EURO));
+        soldVoucher.setValue(Money.of(12, EURO));
+        assertThat(soldVoucher.getValue()).isEqualTo(Money.of(12, EURO));
     }
 
     @Test

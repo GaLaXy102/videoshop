@@ -153,7 +153,7 @@ class OrderController {
 					// temporary structure
 					.forEach(cartItem -> {
 						int count = 0;
-						SoldVoucher newVoucher = null;
+						SoldVoucher newVoucher;
 						while (cartItem.getQuantity().isGreaterThan(Quantity.of(count))) {
 							newVoucher = new SoldVoucher((cartItem.getProduct()).getPrice());
 							voucherInventory.save(newVoucher);
@@ -178,7 +178,12 @@ class OrderController {
 	String orders(Model model) {
 
 		model.addAttribute("ordersCompleted", orderManager.findBy(OrderStatus.COMPLETED));
-
+		// Clean up first
+		voucherInventory.clearZeroValue();
+		// Converting to List such that check for size is possible
+		List<SoldVoucher> validVouchers = new LinkedList<>();
+		voucherInventory.findAll().forEach(validVouchers :: add);
+		model.addAttribute("validVouchers", validVouchers);
 		return "orders";
 	}
 }

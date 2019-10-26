@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.salespointframework.order.Cart;
 import org.salespointframework.order.Order;
 import org.salespointframework.order.OrderManager;
+import org.salespointframework.useraccount.Role;
 import org.salespointframework.useraccount.UserAccount;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import videoshop.catalog.Disc;
 import videoshop.catalog.Voucher;
 import videoshop.inventory.VoucherInventory;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,5 +72,16 @@ public class OrderControllerTest {
         assertThat(model.getAttribute("soldVouchers")).isNull();
     }
 
+    @Test
+    void voucherIsShown() {
+        // Make our user the a Boss
+        userAccount.add(Role.of("BOSS"));
+        OrderController controller = new OrderController(orderManager, voucherInventory);
+        String viewName = controller.orders(model);
+        assertThat(viewName).isEqualTo("orders");
+        assertThat(model.getAttribute("validVouchers")).isNotNull();
+        assertThat(model.getAttribute("validVouchers")).isInstanceOfAny(List.class);
+        // We won't test JPA here
+    }
 
 }
