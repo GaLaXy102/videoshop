@@ -56,6 +56,30 @@
             </tbody>
         </table>
 
+        <h3 th:text="#{cart.voucher.title}">Gutschein einlösen:</h3>
+        <form method="post" role="form" class="ui form error" id="form" th:action="@{/cart/redeem}"
+              th:object="${redeemVoucherForm}">
+            <div class="fields">
+                <div class="eight wide field">
+                    <input class="form-control" name="id" type="text" th:field="*{id}" th:errorclass="is-invalid"
+                           required="required" th:placeholder="#{cart.voucher.id}"/>
+                    <div th:if="${#fields.hasErrors('id')}" class="ui error message">
+                        <p th:text="#{cart.voucher.id.invalid}">Gutschein-ID ungültig</p>
+                    </div>
+                </div>
+                <div class="five wide field">
+                    <input class="form-control" name="pwd" type="password" th:field="*{pwd}"
+                           th:errorclass="is-invalid" required="required" th:placeholder="#{cart.voucher.pwd}"/>
+                    <div th:if="${#fields.hasErrors('pwd')}" class="ui error message">
+                        <p th:text="#{cart.voucher.pwd.invalid}">Gutschein-Passwort ungültig</p>
+                    </div>
+                </div>
+                <div class="three wide field">
+                    <input type="submit" class="fluid ui button" th:value="#{cart.voucher.redeem}" value="Einlösen"/>
+                </div>
+            </div>
+        </form>
+
         <div class="ui two column centered grid">
             <div class="four column centered row">
                 <div class="column">
