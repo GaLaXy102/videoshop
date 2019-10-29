@@ -31,8 +31,4 @@ public class RedeemVoucherForm {
     public String getPwd() {
         return this.pwd;
     }
-
-    public UsedVoucher toUsedVoucher() {
-        return new UsedVoucher(id);
-    }
 }

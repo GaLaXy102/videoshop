@@ -53,7 +53,7 @@
             </thead>
             <tbody th:remove="all-but-first">
             <tr th:each="item : ${usedVouchers}">
-                <td th:text="${item.identifier}">UID-String</td>
+                <td th:text="${item.assignedSoldVoucher.identifier}">UID-String</td>
                 <td th:text="${item.availableValue}">Wert</td>
             </tr>
             </tbody>

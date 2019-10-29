@@ -61,7 +61,7 @@ public class RedeemVoucherFormValidator implements Validator {
         } else if (cart.get().anyMatch(cartItem -> {
             if (cartItem.getProduct() instanceof UsedVoucher) {
                 UsedVoucher uv = (UsedVoucher) cartItem.getProduct();
-                return uv.getIdentifier().equals(foundVoucher.get().getIdentifier());
+                return uv.getAssignedSoldVoucher().getIdentifier().equals(foundVoucher.get().getIdentifier());
             } else {
                 return false;
             }

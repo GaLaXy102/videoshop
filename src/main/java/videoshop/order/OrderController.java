@@ -51,6 +51,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.salespointframework.core.Currencies.EURO;
 
@@ -156,9 +157,15 @@ class OrderController {
         if (errors.hasErrors()) {
             return basket(redeemVoucherForm);
         }
-        UsedVoucher toRedeem = redeemVoucherForm.toUsedVoucher();
-        toRedeem.findAssignedSoldVoucher(voucherInventory);
-        toRedeem.renewAvailableValue();
+        AtomicReference<SoldVoucher> atomicSoldVoucher = new AtomicReference<>();
+        this.voucherInventory.findAll().forEach(soldVoucher -> {
+            if (soldVoucher.getIdentifier().equals(redeemVoucherForm.getId())) {
+                // Happens exactly once
+                atomicSoldVoucher.set(soldVoucher);
+            }
+        });
+        // No test for existence needed as this is checked by Validator
+        UsedVoucher toRedeem = new UsedVoucher(atomicSoldVoucher.get());
         cart.addOrUpdateItem(toRedeem, Quantity.of(1));
         return "redirect:/cart";
     }
