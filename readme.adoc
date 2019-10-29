@@ -5,7 +5,7 @@ image:https://travis-ci.com/GaLaXy102/videoshop.svg?branch=master["Build Status"
 
 Purpose of this sample project is to make students familiar with basic technologies they're going to use during the Software Engineering Lab at Technical University of Dresden.
 
-My personal extension (WIP) is the possibility to buy and redeem gift vouchers.
+My personal extension is the possibility to buy and redeem gift vouchers.
 
 ## Quickstart
 
