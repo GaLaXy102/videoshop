@@ -22,6 +22,24 @@
     </header>
     <nav th:include="navigation :: navigation"></nav>
 
+    <h2 th:text="#{orders.voucher.title}">Verkaufte Gutscheine</h2>
+    <div th:if="${validVouchers.isEmpty()}" th:text="#{orders.voucher.empty}">Keine gültigen Gutscheine vorhanden.</div>
+    <table class="ui celled table" th:unless="${validVouchers.isEmpty()}">
+        <thead>
+        <tr>
+            <th th:text="#{orders.voucher.id}">ID</th>
+            <th th:text="#{orders.voucher.sum}">Betrag</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="voucher : ${validVouchers} ">
+            <td th:text="${voucher.identifier}"></td>
+            <td th:text="${voucher.value}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+
     <h2 th:text="#{orders.completed}"></h2>
     <table class="ui celled table">
         <thead>

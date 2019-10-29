@@ -15,10 +15,6 @@
  */
 package videoshop.catalog;
 
-import static org.salespointframework.core.Currencies.*;
-
-import videoshop.catalog.Disc.DiscType;
-
 import org.javamoney.moneta.Money;
 import org.salespointframework.core.DataInitializer;
 import org.slf4j.Logger;
@@ -26,6 +22,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import videoshop.catalog.Buyable.BuyableType;
+
+import static org.salespointframework.core.Currencies.EURO;
 
 /**
  * A {@link DataInitializer} implementation that will create dummy data for the application on application startup.
@@ -40,13 +39,13 @@ class CatalogDataInitializer implements DataInitializer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CatalogDataInitializer.class);
 
-	private final VideoCatalog videoCatalog;
+	private final ShopCatalog shopCatalog;
 
-	CatalogDataInitializer(VideoCatalog videoCatalog) {
+	CatalogDataInitializer(ShopCatalog shopCatalog) {
 
-		Assert.notNull(videoCatalog, "VideoCatalog must not be null!");
+		Assert.notNull(shopCatalog, "ShopCatalog must not be null!");
 
-		this.videoCatalog = videoCatalog;
+		this.shopCatalog = shopCatalog;
 	}
 
 	/*
@@ -56,36 +55,39 @@ class CatalogDataInitializer implements DataInitializer {
 	@Override
 	public void initialize() {
 
-		if (videoCatalog.findAll().iterator().hasNext()) {
+		if (shopCatalog.findAll().iterator().hasNext()) {
 			return;
 		}
 
 		LOG.info("Creating default catalog entries.");
 
-		videoCatalog.save(new Disc("Last Action Hero", "lac", Money.of(100, EURO), "Äktschn/Comedy", DiscType.DVD));
-		videoCatalog.save(new Disc("Back to the Future", "bttf", Money.of(9.99, EURO), "Sci-Fi", DiscType.DVD));
-		videoCatalog.save(new Disc("Fido", "fido", Money.of(9.99, EURO), "Comedy/Drama/Horror", DiscType.DVD));
-		videoCatalog.save(new Disc("Super Fuzz", "sf", Money.of(9.99, EURO), "Action/Sci-Fi/Comedy", DiscType.DVD));
-		videoCatalog.save(new Disc("Armour of God II: Operation Condor", "aog2oc", Money.of(14.99, EURO),
-				"Action/Adventure/Comedy", DiscType.DVD));
-		videoCatalog.save(new Disc("Persepolis", "pers", Money.of(14.99, EURO), "Animation/Biography/Drama", DiscType.DVD));
-		videoCatalog
-				.save(new Disc("Hot Shots! Part Deux", "hspd", Money.of(9999.0, EURO), "Action/Comedy/War", DiscType.DVD));
-		videoCatalog.save(new Disc("Avatar: The Last Airbender", "tla", Money.of(19.99, EURO), "Animation/Action/Adventure",
-				DiscType.DVD));
+		shopCatalog.save(new Disc("Last Action Hero", "lac", Money.of(100, EURO), "Äktschn/Comedy", BuyableType.DVD));
+		shopCatalog.save(new Disc("Back to the Future", "bttf", Money.of(9.99, EURO), "Sci-Fi", BuyableType.DVD));
+		shopCatalog.save(new Disc("Fido", "fido", Money.of(9.99, EURO), "Comedy/Drama/Horror", BuyableType.DVD));
+		shopCatalog.save(new Disc("Super Fuzz", "sf", Money.of(9.99, EURO), "Action/Sci-Fi/Comedy", BuyableType.DVD));
+		shopCatalog.save(new Disc("Armour of God II: Operation Condor", "aog2oc", Money.of(14.99, EURO),
+				"Action/Adventure/Comedy", BuyableType.DVD));
+		shopCatalog.save(new Disc("Persepolis", "pers", Money.of(14.99, EURO), "Animation/Biography/Drama", BuyableType.DVD));
+		shopCatalog
+				.save(new Disc("Hot Shots! Part Deux", "hspd", Money.of(9999.0, EURO), "Action/Comedy/War", BuyableType.DVD));
+		shopCatalog.save(new Disc("Avatar: The Last Airbender", "tla", Money.of(19.99, EURO), "Animation/Action/Adventure",
+				BuyableType.DVD));
 
-		videoCatalog.save(new Disc("Secretary", "secretary", Money.of(6.99, EURO), "Political Drama", DiscType.BLURAY));
-		videoCatalog.save(new Disc("The Godfather", "tg", Money.of(19.99, EURO), "Crime/Drama", DiscType.BLURAY));
-		videoCatalog
-				.save(new Disc("No Retreat, No Surrender", "nrns", Money.of(29.99, EURO), "Martial Arts", DiscType.BLURAY));
-		videoCatalog
-				.save(new Disc("The Princess Bride", "tpb", Money.of(39.99, EURO), "Adventure/Comedy/Family", DiscType.BLURAY));
-		videoCatalog.save(new Disc("Top Secret!", "ts", Money.of(39.99, EURO), "Comedy", DiscType.BLURAY));
-		videoCatalog
-				.save(new Disc("The Iron Giant", "tig", Money.of(34.99, EURO), "Animation/Action/Adventure", DiscType.BLURAY));
-		videoCatalog.save(new Disc("Battle Royale", "br", Money.of(19.99, EURO), "Action/Drama/Thriller", DiscType.BLURAY));
-		videoCatalog.save(new Disc("Oldboy", "old", Money.of(24.99, EURO), "Action/Drama/Thriller", DiscType.BLURAY));
-		videoCatalog.save(new Disc("Bill & Ted's Excellent Adventure", "bt", Money.of(29.99, EURO),
-				"Adventure/Comedy/Family", DiscType.BLURAY));
+		shopCatalog.save(new Disc("Secretary", "secretary", Money.of(6.99, EURO), "Political Drama", BuyableType.BLURAY));
+		shopCatalog.save(new Disc("The Godfather", "tg", Money.of(19.99, EURO), "Crime/Drama", BuyableType.BLURAY));
+		shopCatalog
+				.save(new Disc("No Retreat, No Surrender", "nrns", Money.of(29.99, EURO), "Martial Arts", BuyableType.BLURAY));
+		shopCatalog
+				.save(new Disc("The Princess Bride", "tpb", Money.of(39.99, EURO), "Adventure/Comedy/Family", BuyableType.BLURAY));
+		shopCatalog.save(new Disc("Top Secret!", "ts", Money.of(39.99, EURO), "Comedy", BuyableType.BLURAY));
+		shopCatalog
+				.save(new Disc("The Iron Giant", "tig", Money.of(34.99, EURO), "Animation/Action/Adventure", BuyableType.BLURAY));
+		shopCatalog.save(new Disc("Battle Royale", "br", Money.of(19.99, EURO), "Action/Drama/Thriller", BuyableType.BLURAY));
+		shopCatalog.save(new Disc("Oldboy", "old", Money.of(24.99, EURO), "Action/Drama/Thriller", BuyableType.BLURAY));
+		shopCatalog.save(new Disc("Bill & Ted's Excellent Adventure", "bt", Money.of(29.99, EURO),
+				"Adventure/Comedy/Family", BuyableType.BLURAY));
+		shopCatalog.save(new Voucher(Money.of(10, EURO)));
+		shopCatalog.save(new Voucher(Money.of(25, EURO)));
+		shopCatalog.save(new Voucher(Money.of(50, EURO)));
 	}
 }

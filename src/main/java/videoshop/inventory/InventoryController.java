@@ -22,30 +22,39 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import videoshop.order.UsedVoucher;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 // Straight forward?
 
 @Controller
 class InventoryController {
 
-	private final UniqueInventory<UniqueInventoryItem> inventory;
+    private final UniqueInventory<UniqueInventoryItem> inventory;
 
-	InventoryController(UniqueInventory<UniqueInventoryItem> inventory) {
-		this.inventory = inventory;
-	}
+    InventoryController(UniqueInventory<UniqueInventoryItem> inventory) {
+        this.inventory = inventory;
+    }
 
-	/**
-	 * Displays all {@link InventoryItem}s in the system
-	 *
-	 * @param model will never be {@literal null}.
-	 * @return the view name.
-	 */
-	@GetMapping("/stock")
-	@PreAuthorize("hasRole('BOSS')")
-	String stock(Model model) {
+    /**
+     * Displays all {@link InventoryItem}s in the system
+     *
+     * @param model will never be {@literal null}.
+     * @return the view name.
+     */
+    @GetMapping("/stock")
+    @PreAuthorize("hasRole('BOSS')")
+    String stock(Model model) {
+        Iterable<UniqueInventoryItem> allItems = inventory.findAll();
+        List<UniqueInventoryItem> allItemsButUsedVouchers = StreamSupport.stream(allItems.spliterator(), false)
+                .filter(uniqueInventoryItem -> !(uniqueInventoryItem.getProduct() instanceof UsedVoucher))
+                .collect(Collectors.toList());
 
-		model.addAttribute("stock", inventory.findAll());
+        model.addAttribute("stock", allItemsButUsedVouchers);
 
-		return "stock";
-	}
+        return "stock";
+    }
 }

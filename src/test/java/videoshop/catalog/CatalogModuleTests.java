@@ -15,16 +15,15 @@
  */
 package videoshop.catalog;
 
-import static org.assertj.core.api.Assertions.*;
-
 import de.olivergierke.moduliths.test.ModuleTest;
 import de.olivergierke.moduliths.test.ModuleTest.BootstrapMode;
-
 import org.junit.jupiter.api.Test;
 import org.salespointframework.accountancy.Accountancy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Module tests for catalog.
@@ -34,7 +33,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 @ModuleTest(mode = BootstrapMode.DIRECT_DEPENDENCIES)
 class CatalogModuleTests {
 
-	@Autowired VideoCatalog catalog;
+	@Autowired
+    ShopCatalog catalog;
 	@Autowired ConfigurableApplicationContext context;
 
 	@Test // #100
